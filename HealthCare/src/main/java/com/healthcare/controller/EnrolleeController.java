@@ -40,6 +40,10 @@ public class EnrolleeController {
 	@Autowired
 	EnrolleeRepository enrolleeRepo;
 	
+	@ApiOperation( value = "Find All Enrollees",
+			   notes = "List of Enrollees will be displayed",
+			   response = Enrollee.class
+		)
 	@GetMapping("/enrollees")
 	public List<Enrollee> getAllEnrollees() {
 		
@@ -62,6 +66,10 @@ public class EnrolleeController {
 		return enrollee.get();
 	}
 	
+	@ApiOperation( value = "Create Enrollee",
+			   notes = "Create Enrollee or return 400 if bad request",
+			   response = Enrollee.class
+		)
 	@PostMapping("/create/enrollee")
 	public ResponseEntity<Enrollee> createEnrollee(@RequestBody Enrollee enrollee) throws FieldBlankException{
 		if(enrollee.getFirstName()=="") {
@@ -78,6 +86,10 @@ public class EnrolleeController {
 		return new ResponseEntity<>(created, HttpStatus.CREATED);		
 	}
 	
+	@ApiOperation( value = "Update Enrollee",
+			   notes = "Update Enrollee if found, otherwise return 404 if not found or 400 if bad request",
+			   response = Enrollee.class
+		)
 	@PutMapping("/update/enrollee")
 	public ResponseEntity<Enrollee> updateEnrollee(@RequestBody Enrollee enrollee) throws ResourceNotFoundException {
 		Enrollee updateEnrollee = service.findById(enrollee.getId()).get();
@@ -89,6 +101,10 @@ public class EnrolleeController {
 		else throw new ResourceNotFoundException("Enrollee with id = " + enrollee.getId() + " was not found.");
 	}
 	
+	@ApiOperation( value = "Patch Enrollee",
+			   notes = "Patch Enrollee if found, otherwise return 404 if not found or 400 if bad request",
+			   response = Enrollee.class
+		)
 	@PatchMapping("/patch/enrollee")
 	public ResponseEntity<Enrollee> editEnrolleeInfo(@RequestBody Map<String, String> map) throws ResourceNotFoundException, ParseException, NumberFormatException {
 		Long id  = Long.valueOf(map.get("id"));
@@ -98,6 +114,10 @@ public class EnrolleeController {
 		return new ResponseEntity<>(service.patchEnrollee(map, enrollee.get()), HttpStatus.CREATED);
 		}
 	 
+	@ApiOperation( value = "Delete Enrollee by Id",
+			   notes = "Delete Enrollee by Id, otherwise return 404",
+			   response = Enrollee.class
+		)
 	@Transactional
 	@DeleteMapping("/delete/enrollee/{id}")
 	public ResponseEntity<Enrollee> deleteEnrollee(@PathVariable long id) throws ResourceNotFoundException {

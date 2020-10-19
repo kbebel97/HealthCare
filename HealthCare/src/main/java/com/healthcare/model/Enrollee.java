@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
 
@@ -38,12 +39,13 @@ public class Enrollee implements Serializable{
 	@NotBlank
 	private String lastName;
 	
-	@NotBlank
+	
 	@Column  
     @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private Date birthday;
 	
+	@NotNull
 	private Long phoneNumber;
 	
 	@JsonManagedReference

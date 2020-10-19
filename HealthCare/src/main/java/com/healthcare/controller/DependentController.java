@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import com.healthcare.exception.FieldBlankException;
 import com.healthcare.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,10 @@ public class DependentController {
 		
 		return dependent.get();
 	}
-	
+	@ApiOperation( value = "Find a Dependent by EnrolleeId",
+			   notes = "Provide an EnrolleeId to look up a Dependent in the database. If id not found, will return 404.",
+			   response = Dependent.class
+		)
 	@GetMapping("/dependentByenrolleeId/{enrolleeId}")
 	public List<Dependent> getDependentBydependentIdAndenrolleeId(@PathVariable long enrolleeId) throws ResourceNotFoundException{
 		
@@ -76,7 +80,10 @@ public class DependentController {
 		
 		return dependents;
 	}
-	
+	@ApiOperation( value = "Find a Dependent by their Id and their EnrolleeId",
+			   notes = "Provide an Id and EnrolleeId to look up a Dependent in the database. If id not found, will return 404.",
+			   response = Dependent.class
+		)
 	@GetMapping("/dependent/{dependentId}/enrollee/{enrolleeId}")
 	public Dependent getDependentByDependentIdAndEnrolleeId(@PathVariable Long dependentId, @PathVariable Long enrolleeId ) throws ResourceNotFoundException{
 		
@@ -88,17 +95,24 @@ public class DependentController {
 		return dependent.get();	
 	}
 	
-	
+	@ApiOperation( value = "Create a dependent with an Active EnrolleeId",
+			   notes = "Create a dependent with an Active EnrolleeId. If id not found, will return 400.",
+			   response = Dependent.class
+		)
 	@PostMapping("/create/dependent/{enrolleeId}")
-	public ResponseEntity<Enrollee> createDependent(@RequestBody Dependent dependent, @PathVariable Long enrolleeId) throws ResourceNotFoundException{		
+	public ResponseEntity<Enrollee> createDependent(@RequestBody Dependent dependent, @PathVariable Long enrolleeId) throws ResourceNotFoundException, FieldBlankException{		
 		Enrollee created = service.save(dependent, enrolleeId);
-		if(created!=null)
-			return new ResponseEntity<>(created, HttpStatus.CREATED);		
+		if(created==null)
 		throw new ResourceNotFoundException("Enrollee with id = " + enrolleeId + " was not found");
+		return new ResponseEntity<>(created, HttpStatus.CREATED);		
+
 }
-	
+	@ApiOperation( value = "Create a dependents with an Active EnrolleeId",
+			   notes = "Create dependents with an Active EnrolleeId. If id not found, will return 400.",
+			   response = Dependent.class
+		)
 	@PostMapping("/create/dependents/{enrolleeId}")
-	public ResponseEntity<Enrollee> createDependents(@RequestBody List<Dependent> dependents, @PathVariable Long enrolleeId) throws ResourceNotFoundException{
+	public ResponseEntity<Enrollee> createDependents(@RequestBody List<Dependent> dependents, @PathVariable Long enrolleeId) throws ResourceNotFoundException, FieldBlankException{
 		Enrollee enrolleeList = service.saveDependents(dependents, enrolleeId);
 		if(enrolleeList!=null)
 			return new ResponseEntity<>(enrolleeList, HttpStatus.CREATED);		
@@ -106,7 +120,10 @@ public class DependentController {
 		
 	}
 	
-	
+	@ApiOperation( value = "Update a dependent",
+			   notes = "Update a dependent. If id not found, will return 400.",
+			   response = Dependent.class
+		)
 	@PutMapping("/update/dependent")
 	public Dependent update(@RequestBody Dependent dependent) throws ResourceNotFoundException {
 		Dependent found = dependentRepo.findByid(dependent.getId()).get();
@@ -119,7 +136,10 @@ public class DependentController {
 		found.setEnrollee(enrollee);
 		return dependentRepo.save(found);	
 	}
-	
+	@ApiOperation( value = "Patch a dependent",
+			   notes = "Update a dependent with Id. If id not found, will return 400.",
+			   response = Dependent.class
+		)
 	@PatchMapping("/patch/dependent")
 	public Dependent patch(@RequestBody Map<String, String> map) throws ResourceNotFoundException, ParseException{
 		Dependent found = getDependentBydependentId(Long.valueOf(map.get("id")));
@@ -129,6 +149,10 @@ public class DependentController {
 		return service.patchDependent(map, found);
 	}
 	
+	@ApiOperation( value = "Delete a dependent with an id",
+			   notes = "Delete a dependent with Id. If id not found, will return 400.",
+			   response = Dependent.class
+		)
 	@Transactional
 	@DeleteMapping("/delete/dependent/{dependentId}")
 	public ResponseEntity<Dependent> deleteEnrollee(@PathVariable long dependentId) throws ResourceNotFoundException {

@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.healthcare.exception.FieldBlankException;
 import com.healthcare.exception.ResourceNotFoundException;
 import com.healthcare.model.Dependent;
 import com.healthcare.model.Enrollee;
@@ -78,10 +81,17 @@ public class DependentService {
 		
 	}
 	
-	public Enrollee saveDependents(List<Dependent> list, Long EnrolleeId) {
+
+	public Enrollee saveDependents(List<Dependent> list, Long EnrolleeId) throws ResourceNotFoundException, FieldBlankException {
 		Enrollee enrollee = enrolleeRepo.findById(EnrolleeId).get();
 		if(enrollee!=null) {
 			for(int i = 0; i < list.size(); i++ ) {
+				if(list.get(i).getFirstName()=="")
+					throw new FieldBlankException("First Name field was left blank for one or more dependent entries");
+				if(list.get(i).getLastName()=="")
+					throw new FieldBlankException("Last Name field was left blank for one or more dependent entries");
+				if(list.get(i).getBirthday() == null)
+					throw new FieldBlankException("Birthday field was left blank for one or more dependent entries");
 				list.get(i).setId(-1L);
 				list.get(i).setEnrollee(enrollee);
 			}
@@ -89,22 +99,29 @@ public class DependentService {
 			return enrolleeRepo.save(enrollee);
 
 		}
-		return null;
+		else throw new ResourceNotFoundException("Enrollee with id = " + EnrolleeId + " not found");
 	}
 	
 		
-	public Enrollee save(Dependent dependent, Long EnrolleeId){
+	public Enrollee save(Dependent dependent, Long EnrolleeId) throws ResourceNotFoundException, FieldBlankException{
 		Enrollee enrollee = enrolleeRepo.findById(EnrolleeId).get();
 		List<Dependent> list = new ArrayList<Dependent>();
 		if(enrollee!=null) {
+			if(dependent.getFirstName()=="")
+				throw new FieldBlankException("First Name field was left blank");
+			if(dependent.getLastName()=="")
+				throw new FieldBlankException("Last Name field was left blank");
+			if(dependent.getBirthday() ==null)
+				throw new FieldBlankException("Birthday field was left blank");
 			dependent.setId(-1L);
 			dependent.setEnrollee(enrollee);
 			list.add(dependent);
 			enrollee.setDependents(list);
 			return enrolleeRepo.save(enrollee);
-
 		}
-		return null;
+		else throw new ResourceNotFoundException("Enrollee with id = " + EnrolleeId + " not found");
+
+		
 	}
 
 }
