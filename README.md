@@ -1,4 +1,4 @@
-# HealthCare Application that allows a user tp 
+# HealthCare Application that allows a user to
 - Add a new enrollee
 - Modify an existing enrollee
 - Remove an enrollee entirely
