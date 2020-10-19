@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -50,7 +51,7 @@ import com.healthcare.repository.EnrolleeRepository;
 import com.healthcare.service.DependentService;
 import com.healthcare.service.EnrolleeService;
 
-//@OverrideAutoConfiguration(enabled=true)
+@OverrideAutoConfiguration(enabled=true)
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = EnrolleeController.class,excludeAutoConfiguration = SecurityAutoConfiguration.class)
 class EnrolleeControllerTest {
@@ -58,10 +59,10 @@ class EnrolleeControllerTest {
 	
 	private final String STARTING_URI = "http://localhost:8080/api";
 	
-	@Mock
+	@MockBean
 	private EnrolleeRepository repo;
 	
-	@Mock
+	@MockBean
 	private EnrolleeService service;
 	
 	
@@ -76,17 +77,23 @@ class EnrolleeControllerTest {
 	@Autowired
 	EnrolleeController enrolleeController;
 	
+	@InjectMocks // Yes there is more going on here
+	private Enrollee Kacper;
+	
+	@InjectMocks // Yes there is more going on here
+	private Enrollee Anna;
+	
 	@Test
 	void testfindAllEnrollees() throws Exception{
 		String uri = STARTING_URI + "/enrollees";
-		Enrollee Kacper =  new Enrollee(1L, "kacper", "Bebel", new Date(), 3472136196L, true, null);
-		Enrollee Anna = new Enrollee(1L, "kacper", "Bebel", new Date(), 917L, true, null);
+		Kacper =  spy(new Enrollee(1L, "kacper", "Bebel", new Date(), 3472136196L, true, null));
+		Anna = spy(new Enrollee(1L, "kacper", "Bebel", new Date(), 917L, true, null));
 
 
 		List<Enrollee> allEnrollees = new ArrayList<Enrollee>();
 		allEnrollees.add(Kacper);
 		allEnrollees.add(Anna);
-		when(repo.findAll()).thenReturn(allEnrollees);
+		when(repo.findAll()).thenReturn(new ArrayList<Enrollee>());
 		
 		mockMvc.perform(get(uri))
 			.andDo(print())

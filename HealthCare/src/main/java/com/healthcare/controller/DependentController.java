@@ -69,7 +69,7 @@ public class DependentController {
 			   notes = "Provide an EnrolleeId to look up a Dependent in the database. If id not found, will return 404.",
 			   response = Dependent.class
 		)
-	@GetMapping("/dependentByenrolleeId/{enrolleeId}")
+	@GetMapping("/dependentsByenrolleeId/{enrolleeId}")
 	public List<Dependent> getDependentBydependentIdAndenrolleeId(@PathVariable long enrolleeId) throws ResourceNotFoundException{
 		
 		List<Dependent> dependents = service.findAllByEnrolleeId(enrolleeId);
@@ -85,14 +85,14 @@ public class DependentController {
 			   response = Dependent.class
 		)
 	@GetMapping("/dependent/{dependentId}/enrollee/{enrolleeId}")
-	public Dependent getDependentByDependentIdAndEnrolleeId(@PathVariable Long dependentId, @PathVariable Long enrolleeId ) throws ResourceNotFoundException{
+	public ResponseEntity<Dependent> getDependentByDependentIdAndEnrolleeId(@PathVariable Long dependentId, @PathVariable Long enrolleeId ) throws ResourceNotFoundException{
 		
 		Optional<Dependent> dependent = service.findByEnrolleeIdAndDependentId(enrolleeId, dependentId);
 		
 		if(!dependent.isPresent()) {
 			throw new ResourceNotFoundException("Dependent with DependentId = " + dependentId + " and EnrolleeId = " + enrolleeId + " was not found.");
 		}
-		return dependent.get();	
+		return new ResponseEntity<Dependent>(dependent.get(), HttpStatus.OK);	
 	}
 	
 	@ApiOperation( value = "Create a dependent with an Active EnrolleeId",
@@ -104,7 +104,7 @@ public class DependentController {
 		Enrollee created = service.save(dependent, enrolleeId);
 		if(created==null)
 		throw new ResourceNotFoundException("Enrollee with id = " + enrolleeId + " was not found");
-		return new ResponseEntity<>(created, HttpStatus.CREATED);		
+		return new ResponseEntity<Enrollee>(created, HttpStatus.CREATED);		
 
 }
 	@ApiOperation( value = "Create a dependents with an Active EnrolleeId",
@@ -115,7 +115,7 @@ public class DependentController {
 	public ResponseEntity<Enrollee> createDependents(@RequestBody List<Dependent> dependents, @PathVariable Long enrolleeId) throws ResourceNotFoundException, FieldBlankException{
 		Enrollee enrolleeList = service.saveDependents(dependents, enrolleeId);
 		if(enrolleeList!=null)
-			return new ResponseEntity<>(enrolleeList, HttpStatus.CREATED);		
+			return new ResponseEntity<Enrollee>(enrolleeList, HttpStatus.CREATED);		
 		throw new ResourceNotFoundException("Enrollee with id = " + enrolleeId + " was not found");
 		
 	}
@@ -125,7 +125,7 @@ public class DependentController {
 			   response = Dependent.class
 		)
 	@PutMapping("/update/dependent")
-	public Dependent update(@RequestBody Dependent dependent) throws ResourceNotFoundException {
+	public ResponseEntity<Dependent> update(@RequestBody Dependent dependent) throws ResourceNotFoundException {
 		Dependent found = dependentRepo.findByid(dependent.getId()).get();
 		if(found == null) {
 			throw new ResourceNotFoundException("Dependent with id = " + dependent.getId() + " not found");
@@ -134,19 +134,19 @@ public class DependentController {
 
 		found = dependent;
 		found.setEnrollee(enrollee);
-		return dependentRepo.save(found);	
+		return new ResponseEntity<Dependent>(dependentRepo.save(found), HttpStatus.OK);	
 	}
 	@ApiOperation( value = "Patch a dependent",
 			   notes = "Update a dependent with Id. If id not found, will return 400.",
 			   response = Dependent.class
 		)
 	@PatchMapping("/patch/dependent")
-	public Dependent patch(@RequestBody Map<String, String> map) throws ResourceNotFoundException, ParseException{
+	public ResponseEntity<Dependent> patch(@RequestBody Map<String, String> map) throws ResourceNotFoundException, ParseException{
 		Dependent found = getDependentBydependentId(Long.valueOf(map.get("id")));
 		if(found == null) {
 			throw new ResourceNotFoundException("Dependent with id = " + Long.valueOf(map.get("id")) + " not found");
 		}
-		return service.patchDependent(map, found);
+		return new ResponseEntity<Dependent>(service.patchDependent(map, found), HttpStatus.OK);
 	}
 	
 	@ApiOperation( value = "Delete a dependent with an id",
