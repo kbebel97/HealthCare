@@ -13,6 +13,7 @@ import com.healthcare.exception.FieldBlankException;
 import com.healthcare.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,7 +55,7 @@ public class EnrolleeController {
 				   notes = "Provide an id to look up an Enrollee in the database. If id not found, will return 404.",
 				   response = Enrollee.class
 			)
-	@GetMapping("/enrollee/{id}")
+	@GetMapping(value = "/enrollee/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Enrollee getEnrolleeById(@PathVariable("id") long id) throws ResourceNotFoundException {
 		
 		Optional<Enrollee> enrollee = service.findById(id);

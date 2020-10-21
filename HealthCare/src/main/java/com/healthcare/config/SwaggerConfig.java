@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.models.Contact;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -25,10 +26,16 @@ public class SwaggerConfig {
 	@Bean
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2)
+				.apiInfo(apiInfo())
 				.select().apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
 				.paths(PathSelectors.any())
 				.build()
 				;
+	}
+	
+	private ApiInfo apiInfo() {
+		return new ApiInfoBuilder().title("HealthCare Plan").description("This API can be used to create, read, update and delete Enrollee and Dependent information")
+				.version("V2").build();
 	}
 	
 }

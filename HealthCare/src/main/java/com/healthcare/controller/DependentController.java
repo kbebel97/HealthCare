@@ -95,8 +95,8 @@ public class DependentController {
 		return new ResponseEntity<Dependent>(dependent.get(), HttpStatus.OK);	
 	}
 	
-	@ApiOperation( value = "Create a dependent with an Active EnrolleeId",
-			   notes = "Create a dependent with an Active EnrolleeId. If id not found, will return 400.",
+	@ApiOperation( value = "Create a dependent with an active EnrolleeId",
+			   notes = "Create a dependent with an active EnrolleeId. If id not found, will return 400.",
 			   response = Dependent.class
 		)
 	@PostMapping("/create/dependent/{enrolleeId}")
@@ -107,8 +107,8 @@ public class DependentController {
 		return new ResponseEntity<Enrollee>(created, HttpStatus.CREATED);		
 
 }
-	@ApiOperation( value = "Create a dependents with an Active EnrolleeId",
-			   notes = "Create dependents with an Active EnrolleeId. If id not found, will return 400.",
+	@ApiOperation( value = "Create dependents with an active EnrolleeId",
+			   notes = "Create dependents with active EnrolleeId. If id not found, will return 400.",
 			   response = Dependent.class
 		)
 	@PostMapping("/create/dependents/{enrolleeId}")
